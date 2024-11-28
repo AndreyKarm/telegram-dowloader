@@ -1,0 +1,25 @@
+name: Deploy to Server
+
+on:
+  push:
+    branches:
+      - main  # Trigger deployment on pushes to the main branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H 152.70.18.93 >> ~/.ssh/known_hosts
+      - name: Copy files to the server
+        run: |
+          sudo -i
+          scp -o StrictHostKeyChecking=no -i "~/.ssh/id_rsa" -r ./* ubuntu@152.70.18.93:/bots/telegram-downloader
