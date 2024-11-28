@@ -47,8 +47,6 @@ bot.on('message', async (ctx) => {
         else {
             await bot.telegram.sendMessage(chatId, "Unsupported link type.");
         }
-    } else {
-        await bot.telegram.sendMessage(chatId, "Please send a valid link.");
     }
 });
 
