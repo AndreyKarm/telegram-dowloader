@@ -1,36 +1,15 @@
 const { Telegraf } = require('telegraf');
 const axios = require('axios');
-const fs = require('fs');
 require('dotenv').config()
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
 const regex = /https?:\/\/(www\.)?(vm\.)?(vt\.)?(tiktok\.com|instagram\.com\/(reel|p))/;
 
-let channelNames = [];
-
-// Read the existing channel names from the file
-fs.readFile('channels.csv', 'utf8', function (err, data) {
-    if (err) {
-        console.error('Error reading channels.csv:', err);
-        return;
-    }
-    channelNames = data.split('\n').filter(name => name.trim() !== '');
-});
 
 bot.on('message', async (ctx) => {
     const chatId = ctx.chat.id;
     const url = ctx.message.text;
-
-    const chatName = ctx.chat.username || ctx.chat.title || `Chat ID: ${chatId}`;
-    if (!channelNames.includes(chatName)) {
-        channelNames.push(chatName);
-        fs.appendFile('channels.csv', chatName + '\n', function (err) {
-            if (err) {
-                console.error('Error appending to channels.csv:', err);
-            }
-        });
-    }
 
     if (regex.test(url)) {
         const data = await download(url);
