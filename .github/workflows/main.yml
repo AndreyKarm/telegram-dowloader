@@ -15,15 +15,11 @@ jobs:
 
       - name: Set up SSH
         run: |
-          # Create .ssh directory and set correct permissions
           mkdir -p ~/.ssh
-          echo "${{ secrets.PRIVATE_KEY }}" | tr -d '\r' > ~/.ssh/id_rsa
+          echo "${{ secrets.PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          # Add the server's SSH key to known_hosts
           ssh-keyscan -H 138.2.171.77 >> ~/.ssh/known_hosts
-          chmod 644 ~/.ssh/known_hosts
-
       - name: Copy files to the server
         run: |
-          # SCP command to copy files to the server
-          scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -r ./ ubuntu@138.2.171.77:/bots/telegram_downloader
+          sudo -i
+          scp -o StrictHostKeyChecking=no -i "~/.ssh/id_rsa" -r ./* ubuntu@138.2.171.77:/bots/telegram_downloader
