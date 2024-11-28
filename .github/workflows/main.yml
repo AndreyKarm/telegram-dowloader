@@ -18,8 +18,8 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H 138.2.171.77 >> ~/.ssh/known_hosts
+          ssh-keyscan -H 152.70.18.93 >> ~/.ssh/known_hosts
       - name: Copy files to the server
         run: |
           sudo -i
-          scp -o StrictHostKeyChecking=no -i "~/.ssh/id_rsa" -r ./* ubuntu@138.2.171.77:/bots/telegram_downloader
+          scp -o StrictHostKeyChecking=no -i "~/.ssh/id_rsa" -r ./* ubuntu@152.70.18.93:/bots/telegram-downloader
