@@ -31,7 +31,7 @@ bot.on('message', async (ctx) => {
 
 async function download(url) {
     try {
-        const response = await axios.post('https://api.liotom.me/', {
+        const response = await axios.post(process.env.API_URL, {
             url: url,
             videoQuality: '720',
             audioFormat: 'mp3',
