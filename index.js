@@ -49,7 +49,8 @@ async function download(url) {
         }, {
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Api-Key ${process.env.API_KEY}`,
             }
         });
 
