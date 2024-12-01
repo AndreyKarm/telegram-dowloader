@@ -6,7 +6,6 @@ const bot = new Telegraf(process.env.BOT_TOKEN);
 
 const regex = /https?:\/\/(www\.)?(vm\.)?(vt\.)?(tiktok\.com|instagram\.com\/(reel|p))/;
 
-
 bot.on('message', async (ctx) => {
     const chatId = ctx.chat.id;
     const url = ctx.message.text;
@@ -14,14 +13,24 @@ bot.on('message', async (ctx) => {
     if (regex.test(url)) {
         const data = await download(url);
         if (url.includes('vm.tiktok') || url.includes('instagram.com/reel')) {      // for vidoes
-            await bot.telegram.sendVideo(chatId, data.url);
+            try {
+                await bot.telegram.sendVideo(chatId, data.url);
+            }
+            catch (error) {
+                await bot.telegram.sendMessage(chatId, "Error sending video.");
+            }
         }
         else if (url.includes('vt.tiktok') || url.includes('instagram.com/p')) {     // for images
-            const mediaGroup = data.picker.map(item => ({
-                type: item.type,
-                media: item.url
-            }));
-            await bot.telegram.sendMediaGroup(chatId, mediaGroup);
+            try{
+                const mediaGroup = data.picker.map(item => ({
+                    type: item.type,
+                    media: item.url
+                }));
+                await bot.telegram.sendMediaGroup(chatId, mediaGroup);
+            }
+            catch (error) {
+                await bot.telegram.sendMessage(chatId, "Error sending image.");
+            }
         }
         else {
             await bot.telegram.sendMessage(chatId, "Unsupported link type.");
@@ -50,14 +59,13 @@ async function download(url) {
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                'Authorization': `Api-Key ${process.env.API_KEY}`,
+                // 'Authorization': `Api-Key ${process.env.API_KEY}`
             }
         });
-
         return response.data;
     } catch (error) {
-        console.error(error);
-        return { status: 'error', error: { code: 'request_failed' } };
+        console.error('Error downloading:', error.response ? error.response.data : error.message);
+        throw error;
     }
 }
 
