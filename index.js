@@ -13,6 +13,7 @@ const errorMessages = JSON.parse(fs.readFileSync(path.join(__dirname, 'error.jso
 bot.on('message', async (ctx) => {
     const chatId = ctx.chat.id;
     const url = ctx.message.text;
+    await ctx.react('🌭');
 
     if (regex.test(url)) {
         const data = await download(url, chatId);
