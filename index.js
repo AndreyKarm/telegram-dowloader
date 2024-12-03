@@ -11,31 +11,37 @@ bot.on('message', async (ctx) => {
     const url = ctx.message.text;
 
     if (regex.test(url)) {
-        const data = await download(url);
-        if (!data) {
-            await bot.telegram.sendMessage(chatId, "Error downloading video.")};
-        if (url.includes('vm.tiktok') || url.includes('instagram.com/reel')) {      // for vidoes
-            try {
-                await bot.telegram.sendVideo(chatId, data.url);
+        try {
+            const data = await download(url);
+            if (!data) {
+                await bot.telegram.sendMessage(chatId, "Error downloading video.");
+                return;
             }
-            catch (error) {
-                await bot.telegram.sendMessage(chatId, "Error sending video.");
+            if (url.includes('vm.tiktok') || url.includes('instagram.com/reel')) {      // for videos
+                try {
+                    await bot.telegram.sendVideo(chatId, data.url);
+                }
+                catch (error) {
+                    await bot.telegram.sendMessage(chatId, "Error sending video.");
+                }
             }
-        }
-        else if (url.includes('vt.tiktok') || url.includes('instagram.com/p')) {     // for images
-            try{
-                const mediaGroup = data.picker.map(item => ({
-                    type: item.type,
-                    media: item.url
-                }));
-                await bot.telegram.sendMediaGroup(chatId, mediaGroup);
+            else if (url.includes('vt.tiktok') || url.includes('instagram.com/p')) {     // for images
+                try {
+                    const mediaGroup = data.picker.map(item => ({
+                        type: item.type,
+                        media: item.url
+                    }));
+                    await bot.telegram.sendMediaGroup(chatId, mediaGroup);
+                }
+                catch (error) {
+                    await bot.telegram.sendMessage(chatId, "Error sending image.");
+                }
             }
-            catch (error) {
-                await bot.telegram.sendMessage(chatId, "Error sending image.");
+            else {
+                await bot.telegram.sendMessage(chatId, "Unsupported link type.");
             }
-        }
-        else {
-            await bot.telegram.sendMessage(chatId, "Unsupported link type.");
+        } catch (error) {
+            await bot.telegram.sendMessage(chatId, "Error downloading video.");
         }
     }
 });
