@@ -15,27 +15,25 @@ bot.on('message', async (ctx) => {
     const url = ctx.message.text;
     
     if (regex.test(url)) {
-        const data = await download(url, chatId);
+        console.log(data);
         if (!data) return;
         await ctx.react('🌭');
-        if (url.includes('vm.tiktok') || url.includes('instagram.com/reel')) {      // for videos
-            try {
-                await bot.telegram.sendVideo(chatId, data.url);
-            }
-            catch (error) {
-                await bot.telegram.sendMessage(chatId, "Error sending video.");
-            }
-        }
-        if (url.includes('vt.tiktok') || url.includes('instagram.com/p')) {     // for images
+
+        if (data.status === 'picker') {
             try {
                 const mediaGroup = data.picker.map(item => ({
                     type: item.type,
                     media: item.url
                 }));
                 await bot.telegram.sendMediaGroup(chatId, mediaGroup);
+            } catch (error) {
+                await bot.telegram.sendMessage(chatId, "Error sending media group.");
             }
-            catch (error) {
-                await bot.telegram.sendMessage(chatId, "Error sending image.");
+        } else {
+            try {
+                await bot.telegram.sendVideo(chatId, data.url);
+            } catch (error) {
+                await bot.telegram.sendMessage(chatId, "Error sending video.");
             }
         }
     }
@@ -67,7 +65,7 @@ async function download(url, chatId) {
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                // 'Authorization': `Api-Key ${process.env.API_KEY}`
+                'Authorization': `Api-Key ${process.env.API_KEY}`
             }
         });
         return response.data;
