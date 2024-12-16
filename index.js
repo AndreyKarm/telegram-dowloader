@@ -15,6 +15,7 @@ bot.on('message', async (ctx) => {
     const url = ctx.message.text;
     
     if (regex.test(url)) {
+        const data = await download(url, chatId);
         console.log(data);
         if (!data) return;
         await ctx.react('🌭');
